@@ -51,7 +51,7 @@ public class Calculator {
             return result;
         }
     }
-    public static int romanToArabic(String input) throws Exception {
+    static int romanToArabic(String input) throws Exception {
         String romNumeral = input.toUpperCase();
         int result = 0;
 

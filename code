@@ -1,7 +1,4 @@
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -15,25 +12,25 @@ public class Calculator {
         scanner.close();
     }
     public static String calc(String input) throws Exception {
-        Pattern patternRome = Pattern.compile("[Ⅰ-Ⅹ]");
+        Pattern patternRome = Pattern.compile("[I-X]");
         Pattern patternArab = Pattern.compile("[0-9]");
         Matcher matcherRome = patternRome.matcher(input);
         Matcher matcherArab = patternArab.matcher(input);
-        input = input.replaceAll("\\s", "");
+        input = input.replaceAll("\\s", "").toUpperCase();
 
         if(matcherRome.find() && matcherArab.find()) {
             throw new Exception();
         }
 
         if (matcherRome.find()) {
-            String operators = input.replaceAll("[Ⅰ-Ⅹ]+", "");
+            String operators = input.replaceAll("[I-X]+", "");
             String operands[]  = input.split("[+/*-]");
 
             if(operands.length > 2) {
                 throw new Exception();
             }
 
-            int [] x = convertToArab(operands);
+            int [] x = new int[] {romanToArabic(operands[0]), romanToArabic(operands[1])};
             return convertToRoma(mathematicalAction(operators,x));
         } else {
             String result = "";
@@ -54,21 +51,29 @@ public class Calculator {
             return result;
         }
     }
-    static int [] convertToArab(String [] input) throws Exception {
-        String [] rome = new String[] {"Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "Ⅵ", "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ"};
-        int [] x = new int[] {-1,-1};
-        for (int i = 0; i < input.length; i++) {
-            for (int j = 0; j < rome.length; j++)
-                if (input[i].equals(rome[j])) {
-                x[i] = j + 1;
+    public static int romanToArabic(String input) throws Exception {
+        String romNumeral = input.toUpperCase();
+        int result = 0;
+
+        List<romanNumeral> romNumerals = romanNumeral.getReverseSortedValues();
+
+        int i = 0;
+
+        while ((romNumeral.length() > 0) && (i < romNumerals.size())) {
+            romanNumeral symbol = romNumerals.get(i);
+            if (romNumeral.startsWith(symbol.name())) {
+                result += symbol.getValue();
+                romNumeral = romNumeral.substring(symbol.name().length());
+            } else {
+                i++;
             }
         }
 
-        if (x[0] == -1 | x[1] == -1) {
+        if (romNumeral.length() > 0) {
             throw new Exception();
         }
 
-        return x;
+        return result;
     }
     enum romanNumeral {
         I(1), IV(4), V(5), IX(9), X(10),
@@ -125,4 +130,3 @@ public class Calculator {
         return result;
     }
 }
-
